@@ -153,7 +153,12 @@ export function refine<T, S>(
     *refiner(value, ctx) {
       yield* struct.refiner(value, ctx)
       const result = refiner(value, ctx)
-      const failures = toFailures(result, ctx, struct, value)
+      const failures = toFailures(
+        result || { refinement: name },
+        ctx,
+        struct,
+        value
+      )
 
       for (const failure of failures) {
         yield { ...failure, refinement: name }
