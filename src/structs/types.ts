@@ -500,12 +500,15 @@ export function union<A extends AnyStruct, B extends AnyStruct[]>(
     type: 'union',
     schema: null,
     coercer(value, ctx) {
-      const firstMatch =
-        Structs.find((s) => {
-          const [e] = s.validate(value, { coerce: true })
-          return !e
-        }) || unknown()
-      return firstMatch.coercer(value, ctx)
+      for (const S of Structs) {
+        const [error, coerced] = S.validate(value, { coerce: true })
+        if (!error) {
+          return coerced
+        }
+      }
+
+      const fallback = unknown()
+      return fallback.coercer(value, ctx)
     },
     validator(value, ctx) {
       const failures = []
