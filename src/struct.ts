@@ -183,10 +183,19 @@ export function validate<T, S>(
   value: unknown,
   struct: Struct<T, S>,
   options: {
-    coerce?: boolean
-    mask?: boolean
     message?: string
-  } = {}
+  } & (
+    | {
+        coerce: true
+        /** Note that mask only works if `coerce` is set to `true`. */
+        mask?: boolean
+      }
+    | {
+        coerce?: false
+        /** Mask can only be true when coercion is enabled. */
+        mask?: false
+      }
+  ) = {}
 ): [StructError, undefined] | [undefined, T] {
   const tuples = run(value, struct, options)
   const tuple = shiftIterator(tuples)!
